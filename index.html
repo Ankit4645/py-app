@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seaborn Graph Generator</title>
+</head>
+<body>
+    <h1>Seaborn Graph Generator</h1>
+    <form id="graphForm">
+        <label for="xColumn">Select X-axis Column:</label>
+        <select id="xColumn" name="xColumn">
+            <option value="species">Species</option>
+            <option value="bill_length_mm">Bill Length (mm)</option>
+            <option value="bill_depth_mm">Bill Depth (mm)</option>
+            <option value="flipper_length_mm">Flipper Length (mm)</option>
+            <option value="body_mass_g">Body Mass (g)</option>
+        </select>
+
+        <label for="yColumn">Select Y-axis Column:</label>
+        <select id="yColumn" name="yColumn">
+            <option value="species">Species</option>
+            <option value="bill_length_mm">Bill Length (mm)</option>
+            <option value="bill_depth_mm">Bill Depth (mm)</option>
+            <option value="flipper_length_mm">Flipper Length (mm)</option>
+            <option value="body_mass_g">Body Mass (g)</option>
+        </select>
+
+        <label>Select Graph Type:</label><br>
+        <!-- Add radio button options here -->
+        <input type="radio" id="scatter" name="graphType" value="scatter">
+        <label for="scatter">Scatter Plot</label><br>
+        <input type="radio" id="bar" name="graphType" value="bar">
+        <label for="bar">Bar Plot</label><br>
+        <input type="radio" id="line" name="graphType" value="line">
+        <label for="line">Line Plot</label><br>
+        <input type="radio" id="violin" name="graphType" value="violin">
+        <label for="violin">Violin Plot</label><br>
+        <input type="radio" id="box" name="graphType" value="box">
+        <label for="box">Box Plot</label><br>
+        <input type="radio" id="distplot" name="graphType" value="distplot">
+        <label for="distplot">Dist Plot</label><br>
+        <input type="radio" id="pair" name="graphType" value="pair">
+        <label for="pair">Pair Plot</label><br>
+        <input type="radio" id="lmplot" name="graphType" value="lmplot">
+        <label for="lmplot">LM Plot</label><br>
+
+        <button type="submit">Generate Graph</button>
+    </form>
+
+    <div id="graphContainer">
+        <!-- Graph will be displayed here -->
+    </div>
+
+    <script>
+        document.getElementById('graphForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Get selected options
+            var xColumn = document.getElementById('xColumn').value;
+            var yColumn = document.getElementById('yColumn').value;
+            var graphType = document.querySelector('input[name="graphType"]:checked').value;
+
+            // Send selected options to server
+            fetch('/generate_graph', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({xColumn: xColumn, yColumn: yColumn, graphType: graphType})
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                var img = document.createElement('img');
+                img.src = URL.createObjectURL(blob);
+                img.style.width = '80%'; // Adjust image width as needed
+                document.getElementById('graphContainer').innerHTML = '';
+                document.getElementById('graphContainer').appendChild(img);
+            });
+        });
+    </script>
+</body>
+</html>
